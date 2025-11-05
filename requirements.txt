@@ -14,7 +14,7 @@ click==8.1.8
 cryptography==44.0.2
 deprecation==2.1.0
 distlib==0.3.9
-Django==5.2
+Django==5.2.8
 django-allauth==65.7.0
 django-allauth-themes==0.1.2
 django-classy-tags==4.1.0
