@@ -7,11 +7,11 @@ The assumption here is that you are using a **Linux** PC
 
 Ensure PostgreSQL is installed in your computer, if not follow this [Instructions](https://documentation.ubuntu.com/server/how-to/databases/install-postgresql/index.html)
 
-Make sure python3.12 is installed in your PC
+Make sure python3.13 is installed in your PC
 
 create a Virtual environment on this repo directory using
 
-    python3.12 -m venv venv
+    python3.13 -m venv venv
 
 Activate the virtual environment
     source venv/bin/activate
