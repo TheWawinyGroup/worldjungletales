@@ -12,7 +12,23 @@ class TopicForm(forms.ModelForm):
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
-        fields = ["title", "topic", "content"]
+        fields = [
+            "title",
+            "subtitle",
+            "excerpt",
+            "topic",
+            "article_type",
+            "content",
+            "image_caption",
+            "image_credit",
+            "author_bio",
+            "featured",
+            "editor_pick",
+            "hero_priority",
+            "series",
+            "seo_title",
+            "seo_description",
+        ]
 
 
 class CommentForm(forms.ModelForm):

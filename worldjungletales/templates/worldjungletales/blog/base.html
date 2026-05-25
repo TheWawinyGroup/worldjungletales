@@ -14,13 +14,11 @@
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Discover inspiring stories of wildlife, culture, and conservation from around the globe. World Jungle Tales brings the wild to life through storytelling.
-" />
+  <meta name="description" content="{% block meta_description %}Discover field-tested stories of wildlife, jungle ecosystems, safari travel, culture, and conservation from around the globe.{% endblock %}" />
   <meta name="keywords" content="world jungle tales, global cultures, storytelling, wildlife, conservation" />
   <meta name="author" content="Wawiny Edwin" />
-  <meta property="og:title" content="Bringing you closer to nature with stories from the world's wildest places." />
-  <meta property="og:description" content="Discover inspiring stories of wildlife, culture, and conservation from around the globe. World Jungle Tales brings the wild to life through storytelling.
-" />
+  <meta property="og:title" content="{% block og_title %}World Jungle Tales{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}Field-tested stories of wildlife, jungle ecosystems, safari travel, culture, and conservation.{% endblock %}" />
   <meta property="og:image"
     content="https://rturvxlqpsxpkqobiybe.supabase.co/storage/v1/object/public/media/assets/TalesWorldWide%20Logo.png" />
   <meta property="og:url" content="https://worldjungletales.com/" />
@@ -28,7 +26,7 @@
   <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="World Junge Tales" />
+  <meta name="twitter:title" content="{% block twitter_title %}World Jungle Tales{% endblock %}" />
   <meta name="twitter:url" content="https://www.worldjungletales.com">
   <meta name="twitter:description"
     content="Bringing you closer to nature with stories from the world's wildest places." />
@@ -44,7 +42,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600..900&family=Source+Serif+4:opsz,wght@8..60,400..800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <link rel="apple-touch-icon" sizes="180x180"
     href="https://rturvxlqpsxpkqobiybe.supabase.co/storage/v1/object/public/media/assets/favicon/apple-touch-icon.png" />
@@ -56,7 +54,7 @@
     href="https://rturvxlqpsxpkqobiybe.supabase.co/storage/v1/object/public/media/assets/favicon/site.webmanifest" />
   <style>
     body {
-      font-family: 'Geist', sans-serif !important;
+      font-family: 'Source Serif 4', Georgia, serif !important;
     }
 
     .article-card {
@@ -133,11 +131,6 @@
       border-style: solid;
     }
 
-    .navbar {
-      backdrop-filter: blur(10px);
-      background-color: #212529;
-    }
-
     .form-control::placeholder {
       color: #888;
     }
@@ -149,10 +142,6 @@
 
     .btn-subscribe:hover {
       box-shadow: 0 8px 15px rgba(0, 200, 100, 0.3);
-    }
-
-    .footer {
-      background-color: #212529;
     }
 
     .empty-state {
@@ -175,37 +164,56 @@
       margin-bottom: 1.5rem;
     }
   </style>
+  {% include 'worldjungletales/blog/magazine_styles.html' %}
 </head>
 
-<body class="min-vh-100">
+<body class="min-vh-100 magazine-body">
   <div class="position-relative" style="z-index: 10;">
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top ">
-      <div class="container">
-        <a href="{% url 'home' %}" class="navbar-brand fs-3 fw-bold">
-          <span class="text-success">World</span>
-          <span>Jungle</span>
-          <span class="text-success">Tales</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-          aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            {% for topic in topics %}
-            <li class="nav-item">
-              <a href="{% url 'topics' topic.slug %}" class="nav-link text-light">{{ topic.title }}</a>
-            </li>
-            {% endfor %}
-          </ul>
-          {% if request.user.is_authenticated %}
-          <a href="{% url 'backoffice' %}" class="text-white btn btn-success">Dashboard</a>
-          {% endif %}
+    <header class="site-header sticky-top">
+      <div class="header-edition">
+        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <span>Wildlife, safari, conservation, and field culture</span>
+          <div class="d-flex align-items-center gap-3">
+            <a href="{% url 'newsletter' %}">Newsletter</a>
+            <a href="{% url 'rss' %}">RSS</a>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'backoffice' %}">Dashboard</a>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </nav>
+
+      <nav class="navbar navbar-expand-lg publication-nav">
+        <div class="container">
+          <a href="{% url 'home' %}" class="publication-brand" aria-label="World Jungle Tales homepage">
+            <span>World</span>
+            <span>Jungle</span>
+            <span>Tales</span>
+          </a>
+
+          <button class="navbar-toggler publication-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarContent" aria-label="Toggle navigation">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav publication-sections ms-lg-auto mb-2 mb-lg-0">
+              {% for topic in topics %}
+              <li class="nav-item">
+                <a href="{% url 'topics' topic.slug %}" class="nav-link">{{ topic.title }}</a>
+              </li>
+              {% endfor %}
+              <li class="nav-item">
+                <a href="{% url 'archive' %}" class="nav-link">Archive</a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'write_for_us' %}" class="nav-link">Write</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
 
     {% if message %}
     <div class="container mt-4">
@@ -219,60 +227,63 @@
       {% block content %} {% endblock %}
     </div>
 
-    <footer class="footer py-5">
+    <footer class="publication-footer">
       <div class="container">
-        <div class="row">
-          <div class="col-md-4 mb-4 mb-md-0">
-            <h3 class="h5 fw-bold mb-3 text-white">World Jungle Tales</h3>
-            <p class="text-white mb-3">Bringing you closer to nature with stories from the world's wildest places.
-            </p>
-            <div class="d-flex gap-3">
-              <a href="https://www.x.com/@tales_jungle" target="_blank" class="text-white"
-                aria-label="follow us on X"><i class="bi bi-twitter-x"></i></a>
-              <a href="https://www.instagram.com/worldjungletales" target="_blank" class="text-white"
-                aria-label="See us on instagram"><i class="bi bi-instagram"></i></a>
-              <a href="https://www.youtube.com/worldjungletales" target="_blank" class="text-white"
-                aria-label="Visit our Youtube channel"><i class="bi bi-youtube"></i></a>
-              <a href="https://www.linkedin.com/company/worldjungletales" target="_blank" class="text-white"
-                aria-label="Check us out on linkedin"><i class="bi bi-linkedin"></i></a>
-              <a href="https://whatsapp.com/channel/0029VbACOVVFXUuVuVsekx3M" target="_blank" class="text-white"
-                aria-label="Join our whatsapp channel"><i class="bi bi-whatsapp"></i></a>
-              <a href="mailto:info@worldjungletales.com" class="text-white" aria-label="Email us"><i
-                  class="bi bi-envelope"></i></a>
-            </div>
-          </div>
-
-          <div class="col-md-4 mb-4 mb-md-0">
-            <h3 class="h5 fw-bold mb-3 text-white">Quick Links</h3>
-            <ul class="list-unstyled">
-              <li class="mb-2"><a href="{% url 'about' %}" class="text-white text-decoration-none">About Us</a></li>
-              <li class="mb-2"><a href="{% url  'privacy_policy' %}" class="text-white text-decoration-none">Privacy
-                  Policy</a></li>
-              <li class="mb-2"><a href="mailto: info@worldjungletales.com" target="_blank"
-                  class="text-white text-decoration-none">Contact</a></li>
-              <li class="mb-2"><a href="https://buymeacoffee.com/worldjungletales" target="_blank"
-                  class="text-white text-decoration-none">Contribute</a></li>
-              <li><a href="{% url 'write_for_us' %}" target="_blank" class="text-white text-decoration-none">Write for
-                  us</a></li>
-            </ul>
-          </div>
-
-          <div class="col-md-4">
-            <h3 class="h5 fw-bold mb-3 text-white">Latest Updates</h3>
-            <p class="text-white mb-3">Subscribe to our weekly newsletter for the latest discoveries and
-              conservation news.</p>
-            <form class="d-flex" action="{% url 'subscribe'%}" method="post">
-              {% csrf_token %}
-              <input type="email" placeholder="Email" id="email" name="email"
-                class="form-control bg-dark border-success text-white rounded-0 rounded-start text-white">
-              <button class="btn btn-success rounded-0 rounded-end">Subscribe</button>
-            </form>
-          </div>
+        <div class="footer-masthead">
+          <a href="{% url 'home' %}" class="footer-brand">World Jungle Tales</a>
+          <p>Field-tested stories for readers who care about wild places, the people around them, and the future of travel in nature.</p>
         </div>
 
-        <div class="border-top border-dark mt-4 pt-4 text-center text-secondary">
-          <p>© 2025 <a href="https://wellickgroup.com" target="_blank" class="text-white text-decoration-none">World
-              Jungle Tales</a>. All rights reserved.</p>
+        <div class="footer-grid">
+          <section>
+            <h3>Sections</h3>
+            <ul>
+              {% for topic in topics %}
+              <li><a href="{% url 'topics' topic.slug %}">{{ topic.title }}</a></li>
+              {% endfor %}
+              <li><a href="{% url 'archive' %}">Archive</a></li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Publication</h3>
+            <ul>
+              <li><a href="{% url 'about' %}">About</a></li>
+              <li><a href="{% url 'write_for_us' %}">Write for us</a></li>
+              <li><a href="{% url 'privacy_policy' %}">Privacy policy</a></li>
+              <li><a href="mailto:info@worldjungletales.com">Contact</a></li>
+              <li><a href="https://buymeacoffee.com/worldjungletales" target="_blank">Contribute</a></li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Follow</h3>
+            <div class="footer-socials">
+              <a href="https://www.x.com/@tales_jungle" target="_blank" aria-label="Follow us on X"><i class="bi bi-twitter-x"></i></a>
+              <a href="https://www.instagram.com/worldjungletales" target="_blank" aria-label="See us on Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="https://www.youtube.com/worldjungletales" target="_blank" aria-label="Visit our YouTube channel"><i class="bi bi-youtube"></i></a>
+              <a href="https://www.linkedin.com/company/worldjungletales" target="_blank" aria-label="Check us out on LinkedIn"><i class="bi bi-linkedin"></i></a>
+              <a href="https://whatsapp.com/channel/0029VbACOVVFXUuVuVsekx3M" target="_blank" aria-label="Join our WhatsApp channel"><i class="bi bi-whatsapp"></i></a>
+              <a href="mailto:info@worldjungletales.com" aria-label="Email us"><i class="bi bi-envelope"></i></a>
+            </div>
+          </section>
+
+          <section class="footer-newsletter">
+            <h3>The Field Briefing</h3>
+            <p>Weekly safari intelligence, conservation reporting, and visual dispatches.</p>
+            <form action="{% url 'subscribe'%}" method="post">
+              {% csrf_token %}
+              <div class="input-group">
+                <input type="email" placeholder="Email address" id="footer-email" name="email" class="form-control" required>
+                <button class="btn btn-dark">Subscribe</button>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <div class="footer-bottom">
+          <span>© 2026 World Jungle Tales. All rights reserved.</span>
+          <span>An editorial publication by <a href="https://wellickgroup.com" target="_blank">Wellick Group</a>.</span>
         </div>
       </div>
     </footer>

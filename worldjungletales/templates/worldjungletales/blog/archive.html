@@ -1,0 +1,46 @@
+{% extends 'worldjungletales/blog/base.html' %}
+{% block title %}Archive | World Jungle Tales{% endblock %}
+{% block meta_description %}Browse the World Jungle Tales archive of wildlife, safari, conservation, jungle culture, and nature travel stories.{% endblock %}
+{% block content %}
+<main class="magazine-shell">
+  <header class="topic-hero">
+    <div>
+      <span class="kicker">Archive</span>
+      <h1>All Stories</h1>
+    </div>
+    <p class="story-deck">Every published feature, field dispatch, guide, interview, photo essay, and conservation report.</p>
+  </header>
+
+  <section class="river-layout">
+    <div>
+      {% for article in articles %}
+      <article class="river-item">
+        <a href="{% url 'article' article.slug %}" class="magazine-link"><img src="{{ article.image_url }}" alt="{{ article.title }}"></a>
+        <div>
+          <span class="kicker">{{ article.topic }} / {{ article.get_article_type_display }}</span>
+          <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+          <p>{{ article.display_excerpt|truncatechars:180 }}</p>
+          <div class="story-meta">
+            <span>{{ article.published_on|default:article.created_on|date:"M d, Y" }}</span>
+            <span>{{ article.read_time }} min read</span>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <p>No published articles yet.</p>
+      {% endfor %}
+    </div>
+
+    <aside class="magazine-rail">
+      <div class="section-title">
+        <h2>Sections</h2>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        {% for topic in topics %}
+        <a class="btn btn-outline-dark btn-sm" href="{% url 'topics' topic.slug %}">{{ topic.title }}</a>
+        {% endfor %}
+      </div>
+    </aside>
+  </section>
+</main>
+{% endblock %}

@@ -3,71 +3,90 @@
 <style>
     .editor-header {
         padding: 2rem 4rem 1rem;
-        /* border-bottom: 1px solid #e5e5e5; */
     }
 
     .editor-body {
-        flex: 1;
-        overflow-y: auto;
-        padding: 1rem 4rem;
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        padding: 1rem 4rem 8rem;
+    }
+
+    .editor-main,
+    .editor-panel {
+        background: #fff;
+        border: 1px solid #e6e1d8;
+        border-radius: 8px;
+        padding: 1.5rem;
     }
 
     .form-control,
     .form-select {
-        border: none;
-        border-bottom: 1px solid #ccc;
-        border-radius: 0;
-        font-size: 1.25rem;
-        padding-left: 0;
+        border: 1px solid #d7d0c4;
+        border-radius: 6px;
+        font-size: 1rem;
     }
 
-    .form-control:focus,
-    .form-select:focus {
-        box-shadow: none;
-        border-bottom: 2px solid #000;
+    #id_title {
+        border: none;
+        border-bottom: 2px solid #111;
+        border-radius: 0;
+        font-size: clamp(2rem, 5vw, 4rem);
+        font-weight: 900;
+        line-height: 1;
+        padding-left: 0;
     }
 
     .ql-editor {
         font-family: 'Geist', serif !important;
-        min-height: 60vh;
-        font-size: 1.2rem;
+        min-height: 55vh;
+        font-size: 1.1rem;
+        line-height: 1.75;
     }
 
     .editor-footer {
-        padding: 1rem 4rem;
-        border-top: 1px solid #e5e5e5;
         background: #fff;
-        position: sticky;
+        border-top: 1px solid #e5e5e5;
         bottom: 0;
+        left: 0;
+        padding: 1rem 4rem;
+        position: sticky;
+        right: 0;
         z-index: 10;
     }
 
     .form-label {
-        font-weight: 500;
-        font-size: 0.9rem;
-        color: #666;
-        margin-bottom: 0.25rem;
+        color: #555;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
     }
 
     .invalid-feedback {
         color: red;
+        display: block;
         font-size: 0.9rem;
     }
 
-    html,
-    body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-    }
+    @media (max-width: 991px) {
+        .editor-body {
+            grid-template-columns: 1fr;
+            padding: 1rem;
+        }
 
-    .editor-page {
-        height: 100vh;
+        .editor-header,
+        .editor-footer {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
     }
 </style>
+
 <div class="editor-header">
-    <input type="text" name="title" id="id_title" placeholder="Catchy Title (required)"
-        class="form-control display-6 {% if form.title.errors %}is-invalid{% endif %}"
+    <input type="text" name="title" id="id_title" placeholder="Magazine headline"
+        class="form-control {% if form.title.errors %}is-invalid{% endif %}"
         value="{{ form.title.value|default_if_none:'' }}">
     {% for error in form.title.errors %}
     <div class="invalid-feedback">{{ error }}</div>
@@ -75,75 +94,107 @@
 </div>
 
 <div class="editor-body">
-    <div class="mb-4">
-        <label for="id_cover_image" class="form-label">Cover Image (required)</label>
-        <input type="file" name="image" id="id_cover_image"
-            class="form-control {% if form.image.errors %}is-invalid{% endif %}">
-        {% if article.image_url %}
-        <small>Current Image: <a href="{{ article.image_url }}" target="_blank">View</a></small>
-        {% endif %}
-        {% for error in form.image.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
+    <div class="editor-main">
+        <div class="mb-4">
+            <label for="id_subtitle" class="form-label">Deck / Subtitle</label>
+            <textarea name="subtitle" id="id_subtitle" rows="2" class="form-control">{{ form.subtitle.value|default_if_none:'' }}</textarea>
+            {% for error in form.subtitle.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="mb-4">
+            <label for="id_excerpt" class="form-label">Excerpt</label>
+            <textarea name="excerpt" id="id_excerpt" rows="3" class="form-control">{{ form.excerpt.value|default_if_none:'' }}</textarea>
+            {% for error in form.excerpt.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Article Body</label>
+            <div id="editor" class="{% if form.content.errors %}is-invalid{% endif %}">
+                {% if form.content.value %}{{ form.content.value|safe }}{% endif %}
+            </div>
+            <textarea name="content" id="id_content" hidden>{{ form.content.value|default_if_none:'' }}</textarea>
+            {% for error in form.content.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
     </div>
 
-    <div class="mb-4">
-        <label for="id_topic" class="form-label">Topic (required)</label>
-        <select name="topic" id="id_topic" class="form-select {% if form.topic.errors %}is-invalid{% endif %}">
-            <option value="">-- Select Topic --</option>
-            {% for topic in topics %}
-            <option value="{{ topic.id }}" {% if form.topic.value|stringformat:"s"==topic.id|stringformat:"s"
-                %}selected{% endif %}>
-                {{ topic.title }}
-            </option>
-            {% endfor %}
-        </select>
-        {% for error in form.topic.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
-
-    <div class="mb-4">
-        <label class="form-label">Content</label>
-        <div id="quill-toolbar"></div>
-        <div id="editor" class="{% if form.content.errors %}is-invalid{% endif %}">
-            {% if form.content.value %}
-            {{ form.content.value|safe }}
+    <aside class="editor-panel">
+        <div class="mb-4">
+            <label for="id_cover_image" class="form-label">Cover Image</label>
+            <input type="file" name="image" id="id_cover_image" class="form-control">
+            {% if article.image_url %}
+            <small>Current image: <a href="{{ article.image_url }}" target="_blank">View</a></small>
             {% endif %}
         </div>
-        <textarea name="content" id="id_content" hidden></textarea>
-        {% for error in form.content.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-        {% endfor %}
-    </div>
+
+        <div class="mb-4">
+            <label for="id_topic" class="form-label">Topic</label>
+            {{ form.topic }}
+            {% for error in form.topic.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="mb-4">
+            <label for="id_article_type" class="form-label">Article Format</label>
+            {{ form.article_type }}
+            {% for error in form.article_type.errors %}<div class="invalid-feedback">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="mb-4">
+            <label for="id_series" class="form-label">Series</label>
+            <input type="text" name="series" id="id_series" class="form-control" value="{{ form.series.value|default_if_none:'' }}">
+        </div>
+
+        <div class="mb-4">
+            <label for="id_hero_priority" class="form-label">Hero Priority</label>
+            <input type="number" min="0" name="hero_priority" id="id_hero_priority" class="form-control" value="{{ form.hero_priority.value|default_if_none:'0' }}">
+            <small class="text-muted">Lower numbers appear first on the homepage cover.</small>
+        </div>
+
+        <div class="form-check mb-2">
+            <input type="checkbox" name="featured" id="id_featured" class="form-check-input" {% if form.featured.value %}checked{% endif %}>
+            <label for="id_featured" class="form-check-label">Featured cover story</label>
+        </div>
+
+        <div class="form-check mb-4">
+            <input type="checkbox" name="editor_pick" id="id_editor_pick" class="form-check-input" {% if form.editor_pick.value %}checked{% endif %}>
+            <label for="id_editor_pick" class="form-check-label">Editor's pick</label>
+        </div>
+
+        <div class="mb-4">
+            <label for="id_image_caption" class="form-label">Image Caption</label>
+            <input type="text" name="image_caption" id="id_image_caption" class="form-control" value="{{ form.image_caption.value|default_if_none:'' }}">
+        </div>
+
+        <div class="mb-4">
+            <label for="id_image_credit" class="form-label">Image Credit</label>
+            <input type="text" name="image_credit" id="id_image_credit" class="form-control" value="{{ form.image_credit.value|default_if_none:'' }}">
+        </div>
+
+        <div class="mb-4">
+            <label for="id_author_bio" class="form-label">Author Bio</label>
+            <textarea name="author_bio" id="id_author_bio" rows="3" class="form-control">{{ form.author_bio.value|default_if_none:'' }}</textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="id_seo_title" class="form-label">SEO Title</label>
+            <input type="text" name="seo_title" id="id_seo_title" class="form-control" value="{{ form.seo_title.value|default_if_none:'' }}">
+        </div>
+
+        <div class="mb-4">
+            <label for="id_seo_description" class="form-label">SEO Description</label>
+            <textarea name="seo_description" id="id_seo_description" rows="3" class="form-control">{{ form.seo_description.value|default_if_none:'' }}</textarea>
+        </div>
+    </aside>
 </div>
 
 <div class="editor-footer">
-    <button type="submit" class="btn btn-success w-100">Save</button>
+    <button type="submit" class="btn btn-dark w-100">Save Editorial Draft</button>
 </div>
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
 <script>
-    const example = `
-        Title: Catchy, 7–10 words
-            e.g. “5 Secret Habitats of the African Wild Dog”
-
-        Intro paragraph: Why this matters
-        “Kenya is home to some of the world’s rarest predators, but very few people ever see them…”
-
-        Body Structure:
-            Section 1 – History or background
-            Section 2 – Key facts or insights
-            Section 3 – Personal story / observation / quote
-            Section 4 – Photo or map(with caption)
-            Section 5 – Call to action
-
-        CTA(End of Post):
-        “Enjoyed this post ? Subscribe for weekly tales from the wild.”
-        “Know a cool wildlife story ? Send it to us.”
-            `;
-
     document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('select').forEach((select) => select.classList.add('form-select'));
+
         const toolbarOptions = [
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike'],
@@ -155,11 +206,9 @@
 
         const quill = new Quill('#editor', {
             theme: 'snow',
-            placeholder: example,
+            placeholder: 'Open with the scene, then explain why it matters. Use subheads, quotes, captions, and evidence.',
             modules: {
-                toolbar: {
-                    container: toolbarOptions
-                }
+                toolbar: toolbarOptions
             }
         });
 

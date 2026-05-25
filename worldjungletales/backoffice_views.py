@@ -188,7 +188,7 @@ def drafts(request):
 @user_passes_test(lambda u: u.is_superuser)
 def draft_publish(request, article_pk):
     articles = Article.objects.filter(status=0)
-    Article.objects.filter(pk=article_pk).update(status=1)
+    Article.objects.filter(pk=article_pk).update(status=1, published_on=timezone.now())
     topics = Topic.objects.filter(status=1)
     context = {}
     context["articles"] = articles

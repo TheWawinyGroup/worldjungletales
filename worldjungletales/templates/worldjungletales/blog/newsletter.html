@@ -1,0 +1,21 @@
+{% extends 'worldjungletales/blog/base.html' %}
+{% block title %}Newsletter | World Jungle Tales{% endblock %}
+{% block meta_description %}Subscribe to the World Jungle Tales weekly field briefing for wildlife, safari, conservation, and nature travel stories.{% endblock %}
+{% block content %}
+<main class="magazine-shell">
+  <section class="newsletter-band">
+    <div>
+      <span class="kicker">Newsletter</span>
+      <h2>The weekly field briefing from World Jungle Tales.</h2>
+      <p>Safari intelligence, conservation reporting, species profiles, photo essays, and practical nature travel guides.</p>
+    </div>
+    <form action="{% url 'subscribe'%}" method="post" class="align-self-end">
+      {% csrf_token %}
+      <div class="input-group">
+        <input type="email" class="form-control" placeholder="Your email address" id="email" name="email" required>
+        <button class="btn btn-warning" type="submit">Subscribe</button>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'worldjungletales/blog/base.html' %}
+{% block title %}{{ profile_author }} | World Jungle Tales{% endblock %}
+{% block meta_description %}Stories by {{ profile_author }} for World Jungle Tales.{% endblock %}
+{% block content %}
+<main class="magazine-shell">
+  <header class="topic-hero">
+    <div>
+      <span class="kicker">Author</span>
+      <h1>{{ profile_author }}</h1>
+    </div>
+    <p class="story-deck">Published reporting, guides, and field notes from this World Jungle Tales contributor.</p>
+  </header>
+
+  <section>
+    {% for article in articles %}
+    <article class="river-item">
+      <a href="{% url 'article' article.slug %}" class="magazine-link"><img src="{{ article.image_url }}" alt="{{ article.title }}"></a>
+      <div>
+        <span class="kicker">{{ article.topic }} / {{ article.get_article_type_display }}</span>
+        <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+        <p>{{ article.display_excerpt|truncatechars:180 }}</p>
+        <div class="story-meta">
+          <span>{{ article.published_on|default:article.created_on|date:"M d, Y" }}</span>
+          <span>{{ article.read_time }} min read</span>
+        </div>
+      </div>
+    </article>
+    {% empty %}
+    <p>No published stories for this author yet.</p>
+    {% endfor %}
+  </section>
+</main>
+{% endblock %}

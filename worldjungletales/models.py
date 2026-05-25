@@ -1,9 +1,20 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.html import strip_tags
 from django.utils.text import slugify
 
 STATUS = ((0, "Draft"), (1, "Publish"))
+ARTICLE_TYPES = (
+    ("feature", "Feature"),
+    ("dispatch", "Field Dispatch"),
+    ("guide", "Guide"),
+    ("interview", "Interview"),
+    ("photo_essay", "Photo Essay"),
+    ("news", "News"),
+    ("profile", "Species Profile"),
+)
 
 
 class AbstractBaseModel(models.Model):
@@ -36,13 +47,39 @@ class Article(AbstractBaseModel):
     title = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(max_length=200, unique=True)
     image_url = models.URLField()
+    subtitle = models.CharField(max_length=255, blank=True)
+    excerpt = models.TextField(blank=True)
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
+    article_type = models.CharField(
+        max_length=20, choices=ARTICLE_TYPES, default="feature"
+    )
     content = models.TextField()
+    image_caption = models.CharField(max_length=255, blank=True)
+    image_credit = models.CharField(max_length=120, blank=True)
+    author_bio = models.TextField(blank=True)
+    featured = models.BooleanField(default=False)
+    editor_pick = models.BooleanField(default=False)
+    hero_priority = models.PositiveSmallIntegerField(default=0)
+    series = models.CharField(max_length=120, blank=True)
+    seo_title = models.CharField(max_length=200, blank=True)
+    seo_description = models.CharField(max_length=255, blank=True)
+    published_on = models.DateTimeField(null=True, blank=True)
     status = models.IntegerField(choices=STATUS, default=0)
 
     @property
     def views_count(self):
         return self.views_data.count()
+
+    @property
+    def display_excerpt(self):
+        if self.excerpt:
+            return self.excerpt
+        return strip_tags(self.content)[:180]
+
+    @property
+    def read_time(self):
+        word_count = len(strip_tags(self.content).split())
+        return max(1, round(word_count / 220))
 
     def __str__(self):
         return self.title
@@ -56,6 +93,8 @@ class Article(AbstractBaseModel):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             self.slug = slug
+        if self.status == 1 and not self.published_on:
+            self.published_on = timezone.now()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

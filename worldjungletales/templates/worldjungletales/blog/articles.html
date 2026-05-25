@@ -1,148 +1,61 @@
 {% extends 'worldjungletales/blog/base.html' %}
-{% block title %}{{ topic }} Stories {% endblock %}
+{% block title %}{{ topic }} Stories | World Jungle Tales{% endblock %}
+{% block meta_description %}The latest {{ topic }} stories, guides, field notes, and reporting from World Jungle Tales.{% endblock %}
 {% block content %}
-
-<style>
-  .topic-heading {
-    position: relative;
-    padding-bottom: 1rem;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  .topic-heading::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 3px;
-  }
-
-  .article-card {
-    backdrop-filter: blur(10px);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(30, 200, 100, 0.1);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .article-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 200, 100, 0.15);
-    border: 1px solid rgba(30, 200, 100, 0.3);
-  }
-
-  .article-image {
-    height: 200px;
-    width: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-    position: relative;
-  }
-
-  .article-card:hover .article-image {
-    transform: scale(1.05);
-  }
-
-  .image-container {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .image-container::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1;
-  }
-
-  .card-body {
-    padding: 1.5rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .article-title {
-    margin-bottom: 1rem;
-    font-weight: 600;
-    font-size: 1.25rem;
-    line-height: 1.4;
-  }
-
-  .read-more-btn {
-    border: none;
-    border-radius: 30px;
-    padding: 0.5rem 1.5rem;
-    font-weight: 600;
-    transition: all 0.3s;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 0.875rem;
-    margin-top: auto;
-    align-self: flex-end;
-  }
-
-  .read-more-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 204, 102, 0.3);
-    color: white;
-  }
-
-  .article-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-
-  @media (max-width: 768px) {
-    .article-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    }
-  }
-</style>
-
-<main class="container items-center py-3">
-  <h2 class="h4 fw-bold mb-4">Latest Stories {% if topic %} in {{ topic}} {% endif %}</h2>
-  {% if articles %}
-  <div class="article-grid">
-    {% for article in articles %}
-    <div class="card  border-secondary">
-      <div class="card-img-top position-relative"
-        style="background-image: url('{{ article.image_url }}'); height: 200px; background-size: cover; background-position: center;">
-        <div class="position-absolute bottom-0 start-0 end-0 p-2 bg-gradient">
-          <span class="badge bg-success">{{ article.topic }}</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">
-          <a href="{% url 'article' article.slug %}" class="stretched-link  text-decoration-none text-dark">{{ article.title }}</a>
-        </h5>
-        <div class="d-flex justify-content-between small mt-3">
-          <span class="text-muted">{{ article.created_on }}</span>
-          <a href="{% url 'article' article.slug %}" class="text-success text-decoration-none">Read More →</a>
-        </div>
-      </div>
+<main class="magazine-shell">
+  <header class="topic-hero">
+    <div>
+      <span class="kicker">Section</span>
+      <h1>{{ topic }}</h1>
     </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="empty-state mb-5 pb-5">
-    <div class="nature-icon">🌿</div>
-    <h2>No Articles Found</h2>
-    <p>We couldn't find any articles in {% if topic %}{{ topic }}{% else %}this category{% endif %} at the moment.</p>
-    <a href="/" class="read-more-btn mt-4 text-dark">Return to Homepage</a>
-  </div>
-  {% endif %}
-</main>
+    <p class="story-deck">A curated desk of stories, guides, interviews, and visual dispatches from the {{ topic }} beat.</p>
+  </header>
 
+  {% if lead_story %}
+  <section class="cover-grid">
+    <article class="lead-story">
+      <a href="{% url 'article' lead_story.slug %}" class="magazine-link">
+        <img src="{{ lead_story.image_url }}" alt="{{ lead_story.title }}">
+      </a>
+      <div>
+        <span class="kicker">{{ lead_story.get_article_type_display }}</span>
+        <h2><a href="{% url 'article' lead_story.slug %}" class="magazine-link">{{ lead_story.title }}</a></h2>
+        <p class="story-deck">{{ lead_story.subtitle|default:lead_story.display_excerpt }}</p>
+        <div class="story-meta">
+          <span>{{ lead_story.published_on|default:lead_story.created_on|date:"M d, Y" }}</span>
+          <span>{{ lead_story.read_time }} min read</span>
+        </div>
+      </div>
+    </article>
+  </section>
+  {% endif %}
+
+  <section>
+    <div class="section-title">
+      <h2>Latest In {{ topic }}</h2>
+    </div>
+    {% if articles %}
+    <div class="story-grid">
+      {% for article in articles %}
+      <article class="story-card">
+        <a href="{% url 'article' article.slug %}" class="magazine-link"><img src="{{ article.image_url }}" alt="{{ article.title }}"></a>
+        <span class="kicker">{{ article.get_article_type_display }}</span>
+        <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+        <p>{{ article.display_excerpt|truncatechars:130 }}</p>
+        <div class="story-meta">
+          <span>{{ article.published_on|default:article.created_on|date:"M d, Y" }}</span>
+          <span>{{ article.read_time }} min read</span>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state mb-5 pb-5">
+      <h2>No More Articles Found</h2>
+      <p>There are no additional articles in {{ topic }} yet.</p>
+      <a href="{% url 'home' %}" class="btn btn-dark mt-3">Return to Homepage</a>
+    </div>
+    {% endif %}
+  </section>
+</main>
 {% endblock %}

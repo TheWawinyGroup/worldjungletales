@@ -1,154 +1,190 @@
 {% extends 'worldjungletales/blog/base.html' %}
-{% block title %} World Jungle Tales | Wildlife, Culture & Conservation Stories{% endblock %}
+{% block title %}World Jungle Tales | Wildlife, Safari, Conservation & Jungle Culture{% endblock %}
 {% block content %}
-<main class="container pb-3 pt-2">
-  <div class="row">
-    <div class="col-lg-8">
-      <h2 class="h4 fw-bold mb-4">Latest Stories</h2>
-      <div class="row g-4">
-        {% if articles %}
-        {% for article in articles %}
-        <article class="col-md-6">
-          <div class="card">
-            <div class="card-img-top position-relative"
-              style="background-image: url('{{ article.image_url }}'); height: 200px; background-size: cover; background-position: center;">
-              <div class="position-absolute bottom-0 start-0 end-0 p-2 bg-gradient">
-                <span class="badge bg-success">{{ article.topic }}</span>
-              </div>
-            </div>
-            <div class="card-body">
-              <h4 class="card-title">
-                <a href="{% url 'article' article.slug %}" class="stretched-link  text-decoration-none text-dark">{{ article.title }}</a>
-              </h4>
-              <div class="d-flex justify-content-between small mt-3">
-                <span class="text-muted">{{ article.created_on }}</span>
-                <a href="{% url 'article' article.slug %}" class="text-success text-decoration-none">Read More →</a>
-              </div>
-            </div>
-          </div>
-        </article>
-        {% endfor %}
+<main class="magazine-shell">
+  <header class="masthead">
+    <span class="kicker">Wildlife. Safari. Conservation. Field Culture.</span>
+    <h1>World Jungle Tales</h1>
+    <p>Magazine-grade reporting and guides from the planet's forests, savannahs, wetlands, coastlines, and protected wild places.</p>
+  </header>
+
+  <form class="mb-4" method="get" action="{% url 'home' %}">
+    <div class="input-group">
+      <input class="form-control" type="search" name="q" value="{{ query|default:'' }}" placeholder="Search wildlife, destinations, species, and conservation stories">
+      <button class="btn btn-dark" type="submit"><i class="bi bi-search"></i></button>
+    </div>
+  </form>
+
+  {% if query %}
+  <div class="section-title">
+    <h2>Search Results for "{{ query }}"</h2>
+    <a class="magazine-link" href="{% url 'home' %}">Clear</a>
+  </div>
+  {% endif %}
+
+  {% if lead_story %}
+  <section class="cover-grid">
+    <article class="lead-story">
+      <a href="{% url 'article' lead_story.slug %}" class="magazine-link">
+        <img src="{{ lead_story.image_url }}" alt="{{ lead_story.title }}">
+      </a>
+      <div>
+        <span class="kicker">{{ lead_story.topic }} / {{ lead_story.get_article_type_display }}</span>
+        <h2><a class="magazine-link" href="{% url 'article' lead_story.slug %}">{{ lead_story.title }}</a></h2>
+        {% if lead_story.subtitle %}
+        <p class="story-deck">{{ lead_story.subtitle }}</p>
         {% else %}
-        <div class="empty-state mb-5 pb-5">
-          <div class="nature-icon">🌿</div>
-          <h2>No Articles Found</h2>
-          <p>We couldn't find any articles in {% if topic %}{{ topic }}{% else %}this category{% endif %} at the moment.
-          </p>
-          <a href="/" class="read-more-btn mt-4 text-dark">Return to Homepage</a>
-        </div>
+        <p class="story-deck">{{ lead_story.display_excerpt }}</p>
         {% endif %}
-      </div>
-    </div>
-
-    <!-- Sidebar -->
-    <div class="col-lg-4 mt-4 mt-lg-0">
-      <div class="sticky-top" style="top: 100px;">
-        <div class="mb-4">
-          <h3 class="h5 fw-bold mb-3">Explore Categories</h3>
-          <div class="row g-2">
-            <div class="col-6">
-              <a href="/topics/Rainforests" class="btn btn-dark w-100">Rainforests</a>
-            </div>
-            <div class="col-6">
-              <a href="/topics/Safari" class="btn btn-warning w-100 ">Safari</a>
-            </div>
-            <div class="col-6">
-              <a href="/topics/Marine%20Life" class="btn btn-primary w-100">Marine Life</a>
-            </div>
-            <div class="col-6">
-              <a href="/topics/Endangered" class="btn btn-danger w-100">Endangered</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="card mb-4 border-secondary bg-dark">
-          <div class="card-body">
-            <h5 class="card-title text-white">Join Our Newsletter</h5>
-            <p class="card-text text-white">Get the latest updates about wildlife conservation and nature stories.</p>
-            <form action="{% url 'subscribe'%}" method="post">
-              {% csrf_token %}
-              <input type="email" class="form-control mb-2" placeholder="Your email address" id="email" name="email">
-              <button class="btn btn-success w-100" type="submit">Subscribe Now</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="card  border-secondary bg-dark">
-          <div class="card-body">
-            <h5 class="card-title text-white">Conservation Status</h5>
-            <div class="mb-3">
-              <div class="d-flex justify-content-between">
-                <span class="text-white">Tiger</span>
-                <span class="badge bg-danger text-white">Endangered</span>
-              </div>
-              <div class="progress">
-                <div class="progress-bar bg-danger" style="width: 30%;"></div>
-              </div>
-            </div>
-            <div class="mb-3">
-              <div class="d-flex justify-content-between">
-                <span class="text-white">Gorilla</span>
-                <span class="badge bg-danger text-white">Critically Endangered</span>
-              </div>
-              <div class="progress">
-                <div class="progress-bar bg-danger" style="width: 15%;"></div>
-              </div>
-            </div>
-            <div class="mb-3">
-              <div class="d-flex justify-content-between">
-                <span class="text-white">Sea Turtle</span>
-                <span class="badge bg-warning text-white">Vulnerable</span>
-              </div>
-              <div class="progress">
-                <div class="progress-bar bg-warning" style="width: 45%;"></div>
-              </div>
-            </div>
-            <a href="https://buymeacoffee.com/worldjungletales" target="_blank"
-              class="d-block text-center mt-3 text-white">Learn how to help →</a>
-          </div>
+        <div class="story-meta">
+          <span>By {{ lead_story.author }}</span>
+          <span>{{ lead_story.published_on|default:lead_story.created_on|date:"M d, Y" }}</span>
+          <span>{{ lead_story.read_time }} min read</span>
         </div>
       </div>
-    </div>
+    </article>
+
+    <aside class="side-stack">
+      {% for article in secondary_stories %}
+      <article class="rail-card">
+        <a href="{% url 'article' article.slug %}" class="magazine-link">
+          <img src="{{ article.image_url }}" alt="{{ article.title }}">
+        </a>
+        <span class="kicker">{{ article.topic }}</span>
+        <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+        <div class="story-meta">
+          <span>{{ article.get_article_type_display }}</span>
+          <span>{{ article.read_time }} min</span>
+        </div>
+      </article>
+      {% empty %}
+      <div class="rail-card">
+        <span class="kicker">Editor's Desk</span>
+        <h3>Mark more articles as featured to fill the cover grid.</h3>
+      </div>
+      {% endfor %}
+    </aside>
+  </section>
+  {% else %}
+  <div class="empty-state mb-5 pb-5">
+    <h2>No Articles Found</h2>
+    <p>Publish your first field story to begin building the magazine cover.</p>
   </div>
+  {% endif %}
+
+  {% if editor_picks %}
+  <section>
+    <div class="section-title">
+      <h2>Editor's Picks</h2>
+    </div>
+    <div class="story-grid">
+      {% for article in editor_picks %}
+      <article class="story-card">
+        <a href="{% url 'article' article.slug %}" class="magazine-link"><img src="{{ article.image_url }}" alt="{{ article.title }}"></a>
+        <span class="kicker">{{ article.topic }}</span>
+        <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+        <p>{{ article.display_excerpt|truncatechars:120 }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="newsletter-band">
+    <div>
+      <span class="kicker">The Briefing</span>
+      <h2>Field notes, safari intelligence, and conservation stories in your inbox.</h2>
+      <p>A weekly edit for readers who care about wild places and the people protecting them.</p>
+    </div>
+    <form action="{% url 'subscribe'%}" method="post" class="align-self-end">
+      {% csrf_token %}
+      <div class="input-group">
+        <input type="email" class="form-control" placeholder="Your email address" id="email" name="email" required>
+        <button class="btn btn-warning" type="submit">Subscribe</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="river-layout">
+    <div>
+      <div class="section-title">
+        <h2>Latest Stories</h2>
+        <a class="magazine-link" href="{% url 'archive' %}">Archive</a>
+      </div>
+      {% for article in latest %}
+      <article class="river-item">
+        <a href="{% url 'article' article.slug %}" class="magazine-link"><img src="{{ article.image_url }}" alt="{{ article.title }}"></a>
+        <div>
+          <span class="kicker">{{ article.topic }} / {{ article.get_article_type_display }}</span>
+          <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+          <p>{{ article.display_excerpt|truncatechars:170 }}</p>
+          <div class="story-meta">
+            <span>{{ article.published_on|default:article.created_on|date:"M d, Y" }}</span>
+            <span>{{ article.read_time }} min read</span>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <p>No latest stories yet.</p>
+      {% endfor %}
+    </div>
+
+    <aside class="magazine-rail">
+      <div class="section-title">
+        <h2>Most Read</h2>
+      </div>
+      <ol class="rail-list">
+        {% for article in most_read %}
+        <li><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></li>
+        {% empty %}
+        <li><span>Most-read stories will appear once readers start visiting articles.</span></li>
+        {% endfor %}
+      </ol>
+
+      <div class="section-title">
+        <h2>Sections</h2>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        {% for topic in topics %}
+        <a class="btn btn-outline-dark btn-sm" href="{% url 'topics' topic.slug %}">{{ topic.title }}</a>
+        {% endfor %}
+      </div>
+    </aside>
+  </section>
+
+  {% if photo_essays %}
+  <section>
+    <div class="section-title">
+      <h2>Photo Essays</h2>
+    </div>
+    <div class="story-grid">
+      {% for article in photo_essays %}
+      <article class="story-card">
+        <a href="{% url 'article' article.slug %}" class="magazine-link"><img src="{{ article.image_url }}" alt="{{ article.title }}"></a>
+        <span class="kicker">{{ article.topic }}</span>
+        <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% for group in section_groups %}
+  <section>
+    <div class="section-title">
+      <h2>{{ group.topic.title }}</h2>
+      <a class="magazine-link" href="{% url 'topics' group.topic.slug %}">View Section</a>
+    </div>
+    <div class="story-grid">
+      {% for article in group.articles %}
+      <article class="story-card">
+        <a href="{% url 'article' article.slug %}" class="magazine-link"><img src="{{ article.image_url }}" alt="{{ article.title }}"></a>
+        <span class="kicker">{{ article.get_article_type_display }}</span>
+        <h3><a href="{% url 'article' article.slug %}" class="magazine-link">{{ article.title }}</a></h3>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
 </main>
-
-<!-- Info Cards -->
-<div class="bg-dark py-5 mt-5">
-  <div class="container">
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card border-secondary h-100">
-          <div class="card-body">
-            <div class="h3 text-success mb-3">🌴</div>
-            <h5 class="card-title ">Discover Ecosystems</h5>
-            <p class="card-text ">Explore the diverse habitats sustaining Earth's wildlife from dense rainforests to
-              vast
-              savannahs.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card border-secondary h-100">
-          <div class="card-body">
-            <div class="h3 text-success mb-3">🐾</div>
-            <h5 class="card-title ">Track Wildlife</h5>
-            <p class="card-text ">Follow the latest scientific discoveries about animal behavior and migration patterns.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card border-secondary h-100">
-          <div class="card-body">
-            <div class="h3 text-success mb-3">🌍</div>
-            <h5 class="card-title ">Support Conservation</h5>
-            <p class="card-text ">Learn about global initiatives protecting endangered species and preserving natural
-              habitats.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 {% endblock %}

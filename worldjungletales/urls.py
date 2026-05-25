@@ -2,6 +2,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 from worldjungletales import backoffice_views, views
+from worldjungletales.feeds import LatestArticlesFeed
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -11,6 +12,10 @@ urlpatterns = [
     path("comment/<int:article_pk>/", views.comment, name="comment"),
     path("privacy-policy/", views.privacy_policy, name="privacy_policy"),
     path("about/", views.about, name="about"),
+    path("archive/", views.archive, name="archive"),
+    path("authors/<str:username>/", views.author_profile, name="author_profile"),
+    path("newsletter/", views.newsletter, name="newsletter"),
+    path("rss/", LatestArticlesFeed(), name="rss"),
     path("write-for-us/", views.write_for_us, name="write_for_us"),
     path(
         "robots.txt",
